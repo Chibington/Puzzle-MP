@@ -20,9 +20,19 @@ public:
 	UPROPERTY(EditAnywhere)
 		float speed = 20;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stuff", Meta = (MakeEditWidget = true))
+		FVector targetLoc;
+
+
+
 protected:
+
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
 
+private:
+	FVector globalTargetLocation;
+	FVector globalStartLocation;
 };
