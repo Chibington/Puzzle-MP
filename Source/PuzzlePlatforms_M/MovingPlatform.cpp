@@ -12,6 +12,19 @@ AMovingPlatform::AMovingPlatform()
 }
 
 
+void AMovingPlatform::AddActiveTrigger()
+{
+	activeTriggers++;
+}
+
+void AMovingPlatform::RemoveActiveTrigger()
+{
+	if (activeTriggers > 0)
+	{
+		activeTriggers--;
+	}
+}
+
 void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
@@ -30,21 +43,26 @@ void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority()) 
+	if (activeTriggers > 0)
 	{
-		FVector loc = GetActorLocation(); //Gets the actors global location
-		float journeyLength = (globalTargetLocation - globalStartLocation).Size(); //magnitude of the vector
-		float journeyTravelled = (loc - globalStartLocation).Size();
-		if (journeyTravelled >= journeyLength)
+		if (HasAuthority())
 		{
-			FVector swap = globalStartLocation;
-			globalStartLocation = globalTargetLocation;
-			globalTargetLocation = swap;
+			FVector loc = GetActorLocation(); //Gets the actors global location
+			float journeyLength = (globalTargetLocation - globalStartLocation).Size(); //magnitude of the vector
+			float journeyTravelled = (loc - globalStartLocation).Size();
+			if (journeyTravelled >= journeyLength)
+			{
+				FVector swap = globalStartLocation;
+				globalStartLocation = globalTargetLocation;
+				globalTargetLocation = swap;
+			}
+			FVector direction = (globalTargetLocation - globalStartLocation).GetSafeNormal(); //Normalizes (unit vector) the direction from the target location to the current actor location
+			loc += speed * direction * DeltaTime; //changes the actors location by adding a multiplication of the speed, direction, and time
+			SetActorLocation(loc);
 		}
-		FVector direction = (globalTargetLocation - globalStartLocation).GetSafeNormal(); //Normalizes (unit vector) the direction from the target location to the current actor location
-		loc += speed * direction * DeltaTime; //changes the actors location by adding a multiplication of the speed, direction, and time
-		SetActorLocation(loc);
 	}
+
+	
 
 	
 }

@@ -23,6 +23,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stuff", Meta = (MakeEditWidget = true))
 		FVector targetLoc;
 
+	void AddActiveTrigger();
+	void RemoveActiveTrigger();
 
 
 protected:
@@ -31,8 +33,12 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
+	
 
 private:
 	FVector globalTargetLocation;
 	FVector globalStartLocation;
+
+	UPROPERTY(EditAnywhere)
+		int32 activeTriggers = 1;
 };
