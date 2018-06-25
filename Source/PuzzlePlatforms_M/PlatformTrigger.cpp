@@ -47,5 +47,9 @@ void APlatformTrigger::OnOverlapBegin(UPrimitiveComponent * OverlappedComp, AAct
 void APlatformTrigger::OnOverlapEnd(UPrimitiveComponent * OverlappedComp, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Deactivated"));
+	for (AMovingPlatform* platform : platformToTrigger)
+	{
+		platform->RemoveActiveTrigger();
+	}
 }
 
