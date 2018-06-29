@@ -18,6 +18,9 @@ public:
 	UPuzzleGameInstance(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Init();
+
+	UFUNCTION(BlueprintCallable)
+		void LoadMenu();
 	
 private:
 	UFUNCTION(Exec)
@@ -25,5 +28,7 @@ private:
 
 	UFUNCTION(Exec)
 		void Join(const FString& address);
+
+	TSubclassOf<class UUserWidget> MenuClass;
 	
 };
