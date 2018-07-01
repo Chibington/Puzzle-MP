@@ -3,9 +3,10 @@
 #include "PuzzleGameInstance.h"
 #include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
-#include "PlatformTrigger.h"
 #include "Blueprint/UserWidget.h"
 
+#include "PlatformTrigger.h"
+#include "MenuSystem/MainMenu.h"
 
 UPuzzleGameInstance::UPuzzleGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -26,7 +27,7 @@ void UPuzzleGameInstance::LoadMenu()
 {
 	if (!ensure(MenuClass != nullptr))return;
 	
-	UUserWidget* menu = CreateWidget<UUserWidget>(this, MenuClass);
+	UMainMenu* menu = CreateWidget<UMainMenu>(this, MenuClass);
 	if (!ensure(menu != nullptr))return;
 
 	menu->AddToViewport();
@@ -40,6 +41,8 @@ void UPuzzleGameInstance::LoadMenu()
 
 	playerController->SetInputMode(inputDataBase);
 	playerController->bShowMouseCursor = true;
+
+	menu->SetMenuInterface(this);
 
 }
 
