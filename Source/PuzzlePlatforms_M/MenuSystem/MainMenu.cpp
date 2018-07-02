@@ -24,6 +24,9 @@ bool UMainMenu::Initialize()
 	if (!ensure(joinIPButton != nullptr)) return false;
 	joinIPButton->OnClicked.AddDynamic(this, &UMainMenu::JoinServer);
 
+	if (!ensure(quitButton != nullptr)) return false;
+	quitButton->OnClicked.AddDynamic(this, &UMainMenu::QuitPressed);
+
 	return true;
 }
 
@@ -68,4 +71,15 @@ void UMainMenu::JoinServer()
 		const FString& address = IPAddressField->GetText().ToString();
 		menuInterface->Join(address);
 	}
+}
+
+void UMainMenu::QuitPressed()
+{
+	UWorld* world = GetWorld();
+	if (!ensure(world != nullptr))return;
+
+	APlayerController* playerController = world->GetFirstPlayerController();
+	if (!ensure(playerController != nullptr))return;
+
+	playerController->ConsoleCommand("quit");
 }
