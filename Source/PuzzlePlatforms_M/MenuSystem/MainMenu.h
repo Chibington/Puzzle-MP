@@ -18,19 +18,41 @@ class PUZZLEPLATFORMS_M_API UMainMenu : public UUserWidget
 public:
 	void SetMenuInterface(IMenuInterface* menuInterface);
 
+	void SetupUI();
+	void TeardownUI();
+
+	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
 
 protected:
 		virtual bool Initialize() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
-		class UButton* host;
+		class UButton* hostButton;
 	
 	UPROPERTY(meta = (BindWidget))
-		class UButton* join;
+		class UButton* joinButton;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* cancelJoinButton;
+
+	UPROPERTY(meta = (BindWidget))
+		class UWidgetSwitcher* menuSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+		class UWidget* joinMenu;
+
+	UPROPERTY(meta = (BindWidget))
+		class UWidget* mainMenu;
 
 	UFUNCTION()
 		void HostServer();
+
+	UFUNCTION()
+		void OpenJoinMenu();
+
+	UFUNCTION()
+		void OpenMainMenu();
 
 	IMenuInterface* menuInterface;
 };
