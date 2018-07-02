@@ -27,46 +27,6 @@ bool UMainMenu::Initialize()
 	return true;
 }
 
-void UMainMenu::SetMenuInterface(IMenuInterface* menuInterface)
-{
-	this->menuInterface = menuInterface;
-}
-
-void UMainMenu::SetupUI()
-{
-	this->AddToViewport();
-
-	UWorld* world = GetWorld();
-	if (!ensure(world != nullptr))return;
-
-	APlayerController* playerController = world->GetFirstPlayerController();
-	if (!ensure(playerController != nullptr))return;
-
-	FInputModeUIOnly inputDataBase;
-	inputDataBase.SetWidgetToFocus(this->TakeWidget());
-	inputDataBase.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	playerController->SetInputMode(inputDataBase);
-	playerController->bShowMouseCursor = true;
-}
-
-void UMainMenu::TeardownUI()
-{
-	this->RemoveFromViewport();
-	
-	UWorld* world = GetWorld();
-	if (!ensure(world != nullptr))return;
-
-	APlayerController* playerController = world->GetFirstPlayerController();
-	if (!ensure(playerController != nullptr))return;
-
-	FInputModeGameOnly inputDataBase;
-
-	playerController->SetInputMode(inputDataBase);
-	playerController->bShowMouseCursor = false;
-
-}
-
 void UMainMenu::OnLevelRemovedFromWorld(ULevel * inLevel, UWorld * inWorld)
 {
 	//In this game, you change the level when you hit "host" or "join"
@@ -76,7 +36,6 @@ void UMainMenu::OnLevelRemovedFromWorld(ULevel * inLevel, UWorld * inWorld)
 	//This makes the logic in the game instance that calls teardownUI obsolete
 	//Try this some time
 }
-
 
 void UMainMenu::HostServer()
 {
@@ -102,8 +61,7 @@ void UMainMenu::OpenMainMenu()
 }
 
 void UMainMenu::JoinServer()
-{
-	
+{	
 	if (menuInterface != nullptr)
 	{
 		if (!ensure(IPAddressField != nullptr))return;

@@ -9,6 +9,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 
+#include "PuzzleGameInstance.h"
+
 //////////////////////////////////////////////////////////////////////////
 // APuzzlePlatforms_MCharacter
 
@@ -74,6 +76,17 @@ void APuzzlePlatforms_MCharacter::SetupPlayerInputComponent(class UInputComponen
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &APuzzlePlatforms_MCharacter::OnResetVR);
+
+	//In Game Menu Bindings
+	PlayerInputComponent->BindAction("InGameMenu", IE_Pressed, this, &APuzzlePlatforms_MCharacter::InGameMenu);
+}
+
+void APuzzlePlatforms_MCharacter::InGameMenu()
+{
+	UPuzzleGameInstance* gameInstance = Cast<UPuzzleGameInstance>(this->GetGameInstance());
+	if (!ensure(gameInstance != nullptr))return;
+
+	gameInstance->LoadInGameMenu();
 }
 
 

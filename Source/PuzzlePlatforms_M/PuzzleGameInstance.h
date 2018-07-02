@@ -22,6 +22,11 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void LoadMenu();
+
+	UFUNCTION(BlueprintCallable)
+		void LoadInGameMenu();
+
+	virtual void LoadMainMenu() override;
 	
 private:
 	UFUNCTION(Exec)
@@ -30,9 +35,13 @@ private:
 	UFUNCTION(Exec)
 		void Join(const FString& address);
 
+		
+
 	void TeardownMenu();
 
 	TSubclassOf<class UUserWidget> MenuClass;
+
+	TSubclassOf<class UUserWidget> InGameMenuClass;
 	
 	class UMainMenu* menu;
 };

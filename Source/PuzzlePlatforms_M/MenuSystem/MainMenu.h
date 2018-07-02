@@ -3,25 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "MenuInterface.h"
+#include "MenuWidget.h"
 #include "MainMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PUZZLEPLATFORMS_M_API UMainMenu : public UUserWidget
+class PUZZLEPLATFORMS_M_API UMainMenu : public UMenuWidget
 {
 	GENERATED_BODY()
 
 public:
-	void SetMenuInterface(IMenuInterface* menuInterface);
-
-	void SetupUI();
-	void TeardownUI();
-
-	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
+		virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
 
 protected:
 		virtual bool Initialize() override;
@@ -63,5 +57,4 @@ private:
 	UFUNCTION()
 		void JoinServer();
 
-	IMenuInterface* menuInterface;
 };
