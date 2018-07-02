@@ -30,6 +30,8 @@ private:
 	UFUNCTION(Exec)
 		void Join(const FString& address);
 
+	void TeardownMenu();
+
 	TSubclassOf<class UUserWidget> MenuClass;
 	
 	class UMainMenu* menu;

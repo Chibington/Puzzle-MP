@@ -24,6 +24,6 @@ class PUZZLEPLATFORMS_M_API IMenuInterface
 public:
 	virtual void Host() = 0; //you need "pure" virtual functions. These are functions in which you EXPECT the children to define and is not defined in the class it is created
 
-
+	virtual void Join(const FString& address) = 0;
 	
 };

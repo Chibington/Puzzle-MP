@@ -38,10 +38,7 @@ void UPuzzleGameInstance::LoadMenu()
 
 void UPuzzleGameInstance::Host()
 {
-	if (menu != nullptr)
-	{
-		menu->TeardownUI();
-	}
+	TeardownMenu();
 
 	UEngine* engineRef = GetEngine();
 	if (!ensure(engineRef != nullptr) )return;
@@ -58,6 +55,8 @@ void UPuzzleGameInstance::Host()
 
 void UPuzzleGameInstance::Join(const FString& address)
 {
+	TeardownMenu();
+
 	UEngine* engineRef = GetEngine();
 	if (!ensure(engineRef != nullptr))return;
 
@@ -67,6 +66,12 @@ void UPuzzleGameInstance::Join(const FString& address)
 	if (!ensure(playerController != nullptr))return;
 
 	playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
+}
 
-
+void UPuzzleGameInstance::TeardownMenu()
+{
+	if (menu != nullptr)
+	{
+		menu->TeardownUI();
+	}
 }

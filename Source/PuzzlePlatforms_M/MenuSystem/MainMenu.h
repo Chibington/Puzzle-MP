@@ -37,6 +37,9 @@ private:
 		class UButton* cancelJoinButton;
 
 	UPROPERTY(meta = (BindWidget))
+		class UButton* joinIPButton;
+
+	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* menuSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
@@ -44,6 +47,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 		class UWidget* mainMenu;
+
+	UPROPERTY(meta = (BindWidget))
+		class UEditableTextBox* IPAddressField;
 
 	UFUNCTION()
 		void HostServer();
@@ -53,6 +59,9 @@ private:
 
 	UFUNCTION()
 		void OpenMainMenu();
+
+	UFUNCTION()
+		void JoinServer();
 
 	IMenuInterface* menuInterface;
 };
