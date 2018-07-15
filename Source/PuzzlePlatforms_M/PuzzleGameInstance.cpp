@@ -4,6 +4,7 @@
 #include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
+#include "OnlineSubsystem.h"
 
 #include "PlatformTrigger.h"
 #include "MenuSystem/MainMenu.h"
@@ -26,10 +27,19 @@ UPuzzleGameInstance::UPuzzleGameInstance(const FObjectInitializer& ObjectInitial
 
 void UPuzzleGameInstance::Init()
 {
+	IOnlineSubsystem* subsystemRef = IOnlineSubsystem::Get();
+	if (subsystemRef != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found subsystem %s"), *subsystemRef->GetSubsystemName().ToString());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found no OSS"));
+	}
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
 }
 
-void UPuzzleGameInstance::LoadMenu()
+void UPuzzleGameInstance::LoadMenuWidget()
 {
 	if (!ensure(MenuClass != nullptr))return;
 	
