@@ -32,7 +32,7 @@ void UPuzzleGameInstance::Init()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found subsystem %s"), *subsystemRef->GetSubsystemName().ToString());
 		IOnlineSessionPtr sessionInterface = subsystemRef->GetSessionInterface();
-		if (sessionInterface.IsValid) //IOnlineSessionPtrs are shared pointers.
+		if (sessionInterface.IsValid()) //IOnlineSessionPtrs are shared pointers.
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Found session interface"));
 		}
