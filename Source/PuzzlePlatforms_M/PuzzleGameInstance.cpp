@@ -43,7 +43,7 @@ void UPuzzleGameInstance::Init()
 			FOnlineSessionSettings sessionSettings;
 			sessionInterface->CreateSession(0, TEXT("Main Session"), sessionSettings);
 
-			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnCreateSessionComplete);
+			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnCreateSessionComplete); //Attaches delegates to the events
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnDestroySessionComplete);
 		}
 	}
@@ -54,33 +54,32 @@ void UPuzzleGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
 }
 
-void UPuzzleGameInstance::LoadMenuWidget()
+void UPuzzleGameInstance::Host()
 {
-	if (!ensure(MenuClass != nullptr))return;
-	
-	menu = CreateWidget<UMainMenu>(this, MenuClass);
-	if (!ensure(menu != nullptr))return;
-
-	menu->SetupUI();
-
-	menu->SetMenuInterface(this);
-
+	if (sessionInterface.IsValid())
+	{
+		auto existingSession = sessionInterface->GetNamedSession(SESSION_NAME); //tries to create server w/ the existing name
+		if (existingSession != nullptr)
+		{
+			sessionInterface->DestroySession(SESSION_NAME); //If the server exits, destroy it. Then, once destroyed it'll go to the delegate 'OnDestroyedSessionComplete' where another will be created
+		}
+		else
+		{
+			CreateSession();
+		}
+	}
 }
 
-void UPuzzleGameInstance::LoadInGameMenu()
+void UPuzzleGameInstance::CreateSession()
 {
-	if (!ensure(MenuClass != nullptr))return;
-
-	UMenuWidget* menu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
-	if (!ensure(menu != nullptr))return;
-
-	menu->SetupUI();
-
-	menu->SetMenuInterface(this);
-
+	if (sessionInterface.IsValid())
+	{
+		FOnlineSessionSettings sessionSettings;
+		sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
+	}
 }
 
-void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool success)
+void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool success) //Runs asynchronously. Waits for the 'CreateSession' to run fully before it runs
 {
 	if (!success)
 	{
@@ -110,31 +109,6 @@ void UPuzzleGameInstance::OnDestroySessionComplete(FName sessionName, bool succe
 	if (success)
 	{
 		CreateSession();
-	}
-}
-
-void UPuzzleGameInstance::CreateSession()
-{
-	if (sessionInterface.IsValid())
-	{
-		FOnlineSessionSettings sessionSettings;
-		sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
-	}	
-}
-
-void UPuzzleGameInstance::Host()
-{
-	if (sessionInterface.IsValid())
-	{
-		auto existingSession = sessionInterface->GetNamedSession(SESSION_NAME);
-		if (existingSession != nullptr)
-		{
-			sessionInterface->DestroySession(SESSION_NAME);
-		}
-		else 
-		{
-			CreateSession();
-		}
 	}
 }
 
@@ -170,3 +144,28 @@ void UPuzzleGameInstance::TeardownMenu()
 }
 
 
+void UPuzzleGameInstance::LoadMenuWidget()
+{
+	if (!ensure(MenuClass != nullptr))return;
+
+	menu = CreateWidget<UMainMenu>(this, MenuClass);
+	if (!ensure(menu != nullptr))return;
+
+	menu->SetupUI();
+
+	menu->SetMenuInterface(this);
+
+}
+
+void UPuzzleGameInstance::LoadInGameMenu()
+{
+	if (!ensure(MenuClass != nullptr))return;
+
+	UMenuWidget* menu = CreateWidget<UMenuWidget>(this, InGameMenuClass);
+	if (!ensure(menu != nullptr))return;
+
+	menu->SetupUI();
+
+	menu->SetMenuInterface(this);
+
+}
