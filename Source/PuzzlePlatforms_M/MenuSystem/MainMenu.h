@@ -21,6 +21,8 @@ public:
 	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
 
 	void SetServerList(TArray<FString> serverNames);
+
+	void SelectIndex(uint32 index);
 	
 protected:
 		virtual bool Initialize() override;
@@ -69,5 +71,7 @@ private:
 
 	UFUNCTION()
 		void QuitPressed();
+
+	TOptional<uint32> selectedIndex;
 
 };
