@@ -7,6 +7,7 @@
 
 #include "MenuSystem/MenuInterface.h"
 #include "OnlineSubsystem.h" //must be added since session interface is a shared pointer(cant be forward declared)
+#include "OnlineSessionInterface.h"
 
 #include "PuzzleGameInstance.generated.h"
 
@@ -38,7 +39,7 @@ private:
 		void Host();
 
 	UFUNCTION(Exec)
-		void Join(const FString& address);
+		void Join(uint32 index);
 
 		
 
@@ -56,6 +57,7 @@ private:
 	void OnCreateSessionComplete(FName sessionName, bool success);
 	void OnDestroySessionComplete(FName sessionName, bool success);
 	void OnFindSessionComplete(bool success);
+	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 
 	void CreateSession();
 };

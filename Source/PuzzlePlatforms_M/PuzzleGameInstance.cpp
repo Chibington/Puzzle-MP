@@ -45,7 +45,7 @@ void UPuzzleGameInstance::Init()
 			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnCreateSessionComplete); //Attaches delegates to the events
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnDestroySessionComplete);
 			sessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnFindSessionComplete);
-
+			sessionInterface->OnJoinSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnJoinSessionComplete);
 					
 		}
 	}
@@ -146,14 +146,31 @@ void UPuzzleGameInstance::OnDestroySessionComplete(FName sessionName, bool succe
 	}
 }
 
-void UPuzzleGameInstance::Join(const FString& address)
+void UPuzzleGameInstance::Join(uint32 index)
 {
+	if (!sessionInterface.IsValid())
+		return;
+	if (!sessionSearch.IsValid())
+		return;
+
 	if (menu != nullptr)
 	{
-		menu->SetServerList({"Test1", "Test2"});
-		//menu->Teardown();
+		menu->TeardownUI();
 	}
 
+	sessionInterface->JoinSession(0, SESSION_NAME, sessionSearch->SearchResults[index]);
+	
+}
+
+void UPuzzleGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result)
+{
+	if (!sessionInterface.IsValid()) return;
+
+	FString address;
+	if (!sessionInterface->GetResolvedConnectString(sessionName, address))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could no get connect string."));
+	}
 	UEngine* engineRef = GetEngine();
 	if (!ensure(engineRef != nullptr))return;
 
