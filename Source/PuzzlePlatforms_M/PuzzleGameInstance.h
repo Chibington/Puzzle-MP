@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+
 #include "MenuSystem/MenuInterface.h"
+#include "OnlineSubsystem.h" //must be added since session interface is a shared pointer(cant be forward declared)
+
 #include "PuzzleGameInstance.generated.h"
 
 /**
@@ -44,4 +47,11 @@ private:
 	TSubclassOf<class UUserWidget> InGameMenuClass;
 	
 	class UMainMenu* menu;
+
+	IOnlineSessionPtr sessionInterface;
+
+	void OnCreateSessionComplete(FName sessionName, bool success);
+	void OnDestroySessionComplete(FName sessionName, bool success);
+
+	void CreateSession();
 };

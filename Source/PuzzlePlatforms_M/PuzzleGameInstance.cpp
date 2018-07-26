@@ -4,11 +4,16 @@
 #include "Engine/Engine.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Blueprint/UserWidget.h"
+
 #include "OnlineSubsystem.h"
+#include "OnlineSessionSettings.h"
+#include "OnlineSessionInterface.h"
 
 #include "PlatformTrigger.h"
 #include "MenuSystem/MainMenu.h"
 #include "MenuSystem/MenuWidget.h"
+
+const static FName SESSION_NAME = TEXT("Main Session");
 
 UPuzzleGameInstance::UPuzzleGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -31,10 +36,15 @@ void UPuzzleGameInstance::Init()
 	if (subsystemRef != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found subsystem %s"), *subsystemRef->GetSubsystemName().ToString());
-		IOnlineSessionPtr sessionInterface = subsystemRef->GetSessionInterface();
+		sessionInterface = subsystemRef->GetSessionInterface(); //Shared pointer that counts references
 		if (sessionInterface.IsValid()) //IOnlineSessionPtrs are shared pointers.
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Found session interface"));
+			FOnlineSessionSettings sessionSettings;
+			sessionInterface->CreateSession(0, TEXT("Main Session"), sessionSettings);
+
+			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnCreateSessionComplete);
+			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnDestroySessionComplete);
 		}
 	}
 	else
@@ -70,12 +80,21 @@ void UPuzzleGameInstance::LoadInGameMenu()
 
 }
 
-void UPuzzleGameInstance::Host()
+void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool success)
 {
-	TeardownMenu();
-
+	if (!success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not create session"));
+		return;
+	}
+	
+	if (menu != nullptr)
+	{
+		menu->TeardownUI();
+	}
+		
 	UEngine* engineRef = GetEngine();
-	if (!ensure(engineRef != nullptr) )return;
+	if (!ensure(engineRef != nullptr))return;
 
 	engineRef->AddOnScreenDebugMessage(0, 3, FColor::Green, TEXT("Hosting"));
 
@@ -83,8 +102,40 @@ void UPuzzleGameInstance::Host()
 	if (!ensure(worldRef != nullptr))return;
 
 	worldRef->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen"); //URL is where the server is sent to. Adding "?listen" makes that the server. 
-																															//Allows for other games to connect to it
+																					  //Allows for other games to connect to it
+}
 
+void UPuzzleGameInstance::OnDestroySessionComplete(FName sessionName, bool success)
+{
+	if (success)
+	{
+		CreateSession();
+	}
+}
+
+void UPuzzleGameInstance::CreateSession()
+{
+	if (sessionInterface.IsValid())
+	{
+		FOnlineSessionSettings sessionSettings;
+		sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
+	}	
+}
+
+void UPuzzleGameInstance::Host()
+{
+	if (sessionInterface.IsValid())
+	{
+		auto existingSession = sessionInterface->GetNamedSession(SESSION_NAME);
+		if (existingSession != nullptr)
+		{
+			sessionInterface->DestroySession(SESSION_NAME);
+		}
+		else 
+		{
+			CreateSession();
+		}
+	}
 }
 
 void UPuzzleGameInstance::Join(const FString& address)
@@ -117,3 +168,5 @@ void UPuzzleGameInstance::TeardownMenu()
 		menu->TeardownUI();
 	}
 }
+
+
