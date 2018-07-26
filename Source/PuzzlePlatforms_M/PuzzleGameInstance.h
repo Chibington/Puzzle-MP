@@ -30,6 +30,8 @@ public:
 		void LoadInGameMenu();
 
 	virtual void LoadMainMenu() override;
+
+	virtual void RefreshServerList() override;
 	
 private:
 	UFUNCTION(Exec)

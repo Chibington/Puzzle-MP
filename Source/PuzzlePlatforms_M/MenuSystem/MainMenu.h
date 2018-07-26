@@ -15,12 +15,19 @@ class PUZZLEPLATFORMS_M_API UMainMenu : public UMenuWidget
 	GENERATED_BODY()
 
 public:
-		virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
 
+	UMainMenu(const FObjectInitializer& ObjectInitializer);
+
+	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
+
+	void SetServerList(TArray<FString> serverNames);
+	
 protected:
 		virtual bool Initialize() override;
 
 private:
+	TSubclassOf<class UUserWidget> ServerRowClass;
+
 	UPROPERTY(meta = (BindWidget))
 		class UButton* hostButton;
 	
@@ -46,7 +53,7 @@ private:
 		class UWidget* mainMenu;
 
 	UPROPERTY(meta = (BindWidget))
-		class UEditableTextBox* IPAddressField;
+		class UPanelWidget* serverList;
 
 	UFUNCTION()
 		void HostServer();

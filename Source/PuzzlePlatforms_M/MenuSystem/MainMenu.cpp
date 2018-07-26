@@ -2,10 +2,22 @@
 
 #include "MainMenu.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 #include "Components/Button.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/EditableTextBox.h"
+#include "Components/TextBlock.h"
 
+#include "ServerRow.h"
+
+UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer)
+{
+	ConstructorHelpers::FClassFinder<UUserWidget> ServerRowBPClass(TEXT("/Game/MenuSystem/WBP_ServerRow.WBP_ServerRow_C"));
+	if (!ensure(ServerRowBPClass.Class != nullptr))return;
+
+	ServerRowClass = ServerRowBPClass.Class;
+}
 
 bool UMainMenu::Initialize()
 {
@@ -48,12 +60,33 @@ void UMainMenu::HostServer()
 	}
 }
 
+void UMainMenu::SetServerList(TArray<FString> serverNames)
+{	
+	UWorld* world = this->GetWorld();
+	if (!ensure(world != nullptr))return;
+
+	serverList->ClearChildren();
+
+	for (const FString& serverName : serverNames)
+	{
+		UServerRow* row = CreateWidget<UServerRow>(world, ServerRowClass);
+		if (!ensure(row != nullptr))return;
+
+		row->serverName->SetText(FText::FromString(serverName));
+
+		serverList->AddChild(row);
+	}
+}
+
 void UMainMenu::OpenJoinMenu()
 {
 	if (!ensure(menuSwitcher != nullptr))return;
 	if (!ensure(joinMenu != nullptr))return;
 	menuSwitcher->SetActiveWidget(joinMenu);
-
+	if (menuInterface != nullptr)
+	{
+		menuInterface->RefreshServerList();
+	}
 }
 
 void UMainMenu::OpenMainMenu()
@@ -67,9 +100,10 @@ void UMainMenu::JoinServer()
 {	
 	if (menuInterface != nullptr)
 	{
-		if (!ensure(IPAddressField != nullptr))return;
+		/*if (!ensure(IPAddressField != nullptr))return;
 		const FString& address = IPAddressField->GetText().ToString();
-		menuInterface->Join(address);
+		menuInterface->Join(address);*/
+		
 	}
 }
 

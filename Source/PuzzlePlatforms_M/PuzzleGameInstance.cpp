@@ -26,7 +26,6 @@ UPuzzleGameInstance::UPuzzleGameInstance(const FObjectInitializer& ObjectInitial
 	if (!ensure(InGameMenuBPClass.Class != nullptr))return;
 
 	InGameMenuClass = InGameMenuBPClass.Class;
-
 	
 }
 
@@ -47,15 +46,7 @@ void UPuzzleGameInstance::Init()
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnDestroySessionComplete);
 			sessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnFindSessionComplete);
 
-			sessionSearch = MakeShareable(new FOnlineSessionSearch());
-			if (sessionSearch.IsValid())
-			{
-				sessionSearch->bIsLanQuery = true;
-				
-				UE_LOG(LogTemp, Warning, TEXT("Starting find session."));
-				sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
-				
-			}			
+					
 		}
 	}
 	else
@@ -119,15 +110,31 @@ void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool succes
 																					  //Allows for other games to connect to it
 }
 
+void UPuzzleGameInstance::RefreshServerList()
+{
+	sessionSearch = MakeShareable(new FOnlineSessionSearch());
+	if (sessionSearch.IsValid())
+	{
+		sessionSearch->bIsLanQuery = true;
+
+		UE_LOG(LogTemp, Warning, TEXT("Starting find session."));
+		sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
+	}
+}
+
 void UPuzzleGameInstance::OnFindSessionComplete(bool success)
 {
-	if (success && sessionSearch.IsValid())
+	if (success && sessionSearch.IsValid() && menu != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Finished find session"));
+		TArray<FString> serverNames;
+
 		for (const FOnlineSessionSearchResult& searchResult : sessionSearch->SearchResults)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Found session name: %s"), *searchResult.GetSessionIdStr());
+			serverNames.Add(searchResult.GetSessionIdStr());
 		}
+		menu->SetServerList(serverNames);
 	}
 }
 
@@ -141,7 +148,11 @@ void UPuzzleGameInstance::OnDestroySessionComplete(FName sessionName, bool succe
 
 void UPuzzleGameInstance::Join(const FString& address)
 {
-	TeardownMenu();
+	if (menu != nullptr)
+	{
+		menu->SetServerList({"Test1", "Test2"});
+		//menu->Teardown();
+	}
 
 	UEngine* engineRef = GetEngine();
 	if (!ensure(engineRef != nullptr))return;
@@ -162,6 +173,7 @@ void UPuzzleGameInstance::LoadMainMenu()
 	playerController->ClientTravel("/Game/MenuSystem/MainMenu", ETravelType::TRAVEL_Absolute); //Sends a SINGLE client to the address(opens the main menu level which automatically opens the main UI)
 }
 
+
 void UPuzzleGameInstance::TeardownMenu()
 {
 	if (menu != nullptr)
@@ -169,7 +181,6 @@ void UPuzzleGameInstance::TeardownMenu()
 		menu->TeardownUI();
 	}
 }
-
 
 void UPuzzleGameInstance::LoadMenuWidget()
 {
