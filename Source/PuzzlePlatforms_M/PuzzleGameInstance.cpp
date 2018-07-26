@@ -45,6 +45,17 @@ void UPuzzleGameInstance::Init()
 
 			sessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnCreateSessionComplete); //Attaches delegates to the events
 			sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnDestroySessionComplete);
+			sessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UPuzzleGameInstance::OnFindSessionComplete);
+
+			sessionSearch = MakeShareable(new FOnlineSessionSearch());
+			if (sessionSearch.IsValid())
+			{
+				sessionSearch->bIsLanQuery = true;
+				
+				UE_LOG(LogTemp, Warning, TEXT("Starting find session."));
+				sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
+				
+			}			
 		}
 	}
 	else
@@ -75,6 +86,10 @@ void UPuzzleGameInstance::CreateSession()
 	if (sessionInterface.IsValid())
 	{
 		FOnlineSessionSettings sessionSettings;
+		sessionSettings.bIsLANMatch = true;
+		sessionSettings.NumPublicConnections = 2;
+		sessionSettings.bShouldAdvertise = true;
+
 		sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 	}
 }
@@ -102,6 +117,18 @@ void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool succes
 
 	worldRef->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen"); //URL is where the server is sent to. Adding "?listen" makes that the server. 
 																					  //Allows for other games to connect to it
+}
+
+void UPuzzleGameInstance::OnFindSessionComplete(bool success)
+{
+	if (success && sessionSearch.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Finished find session"));
+		for (const FOnlineSessionSearchResult& searchResult : sessionSearch->SearchResults)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Found session name: %s"), *searchResult.GetSessionIdStr());
+		}
+	}
 }
 
 void UPuzzleGameInstance::OnDestroySessionComplete(FName sessionName, bool success)
