@@ -15,6 +15,7 @@
 
 
 const static FName SESSION_NAME = TEXT("Main Session");
+const static FName SERVER_NAME_SETTINGS_KEY = TEXT("ServerName");
 
 UPuzzleGameInstance::UPuzzleGameInstance(const FObjectInitializer& ObjectInitializer)
 {
@@ -57,8 +58,10 @@ void UPuzzleGameInstance::Init()
 	UE_LOG(LogTemp, Warning, TEXT("Found class %s"), *MenuClass->GetName());
 }
 
-void UPuzzleGameInstance::Host()
+void UPuzzleGameInstance::Host(FString serverName)
 {
+	desiredServerName = serverName;
+
 	if (sessionInterface.IsValid())
 	{
 		auto existingSession = sessionInterface->GetNamedSession(SESSION_NAME); //tries to create server w/ the existing name
@@ -88,6 +91,7 @@ void UPuzzleGameInstance::CreateSession()
 		sessionSettings.NumPublicConnections = 2;
 		sessionSettings.bShouldAdvertise = true;
 		sessionSettings.bUsesPresence = true; //Important and undocumented
+		sessionSettings.Set((SERVER_NAME_SETTINGS_KEY), desiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 		sessionInterface->CreateSession(0, SESSION_NAME, sessionSettings);
 	}
@@ -147,6 +151,16 @@ void UPuzzleGameInstance::OnFindSessionComplete(bool success)
 			data.maxPlayers = searchResult.Session.SessionSettings.NumPublicConnections;
 			data.currentPlayers = data.maxPlayers - searchResult.Session.NumOpenPublicConnections;
 			data.hostUsername = searchResult.Session.OwningUserName;
+			FString serverName;
+			if (searchResult.Session.SessionSettings.Get(TEXT("Test"), serverName))
+			{
+				data.name = serverName;
+			}
+			else
+			{
+				data.name = "Could not find name.";
+			}
+
 			serverNames.Add(data);
 		}
 		menu->SetServerList(serverNames);

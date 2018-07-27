@@ -36,10 +36,10 @@ public:
 	
 private:
 	UFUNCTION(Exec)
-		void Host();
+		void Host(FString serverName) override;
 
 	UFUNCTION(Exec)
-		void Join(uint32 index);
+		void Join(uint32 index) override;
 
 		
 
@@ -59,5 +59,6 @@ private:
 	void OnFindSessionComplete(bool success);
 	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 
+	FString desiredServerName;
 	void CreateSession();
 };
