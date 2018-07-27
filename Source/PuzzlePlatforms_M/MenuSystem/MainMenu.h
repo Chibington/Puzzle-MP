@@ -6,6 +6,17 @@
 #include "MenuWidget.h"
 #include "MainMenu.generated.h"
 
+USTRUCT()
+struct FServerData
+{
+	GENERATED_BODY();
+
+	FString name;
+	uint16 currentPlayers;
+	uint16 maxPlayers;
+	FString hostUsername;
+};
+
 /**
  * 
  */
@@ -20,7 +31,7 @@ public:
 
 	virtual void OnLevelRemovedFromWorld(ULevel* inLevel, UWorld* inWorld) override;
 
-	void SetServerList(TArray<FString> serverNames);
+	void SetServerList(TArray<FServerData> serverNames);
 
 	void SelectIndex(uint32 index);
 	
