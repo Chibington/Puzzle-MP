@@ -20,6 +20,9 @@ public:
 	
 	void Setup(class UMainMenu* inParent, uint32 inIndex);
 
+	UPROPERTY(BlueprintReadOnly)
+		bool selected = false;
+
 private:
 	UPROPERTY()
 		class UMainMenu* parent;

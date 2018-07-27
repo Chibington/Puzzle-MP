@@ -84,6 +84,20 @@ void UMainMenu::SetServerList(TArray<FString> serverNames)
 void UMainMenu::SelectIndex(uint32 index)
 {
 	selectedIndex = index;
+	UpdateChildren();
+}
+
+void UMainMenu::UpdateChildren()
+{
+	for (int32 i = 0; i < serverList->GetChildrenCount(); ++i)
+	{
+		auto row = Cast<UServerRow>(serverList->GetChildAt(i)); //if you use 'auto' it'll be less confusing. You know what you're casting to if you're casting so auto helps.
+		if (row != nullptr)
+		{
+			row->selected = (selectedIndex.IsSet() && selectedIndex.GetValue() == i);
+		}
+
+	}
 }
 
 void UMainMenu::OpenJoinMenu()
