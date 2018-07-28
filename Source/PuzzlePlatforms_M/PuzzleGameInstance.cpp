@@ -118,7 +118,7 @@ void UPuzzleGameInstance::OnCreateSessionComplete(FName sessionName, bool succes
 	UWorld* worldRef = GetWorld();
 	if (!ensure(worldRef != nullptr))return;
 
-	worldRef->ServerTravel("/Game/ThirdPersonCPP/Maps/ThirdPersonExampleMap?listen"); //URL is where the server is sent to. Adding "?listen" makes that the server. 
+	worldRef->ServerTravel("/Game/Lecture/LectureMaps/Lobby1?listen"); //URL is where the server is sent to. Adding "?listen" makes that the server. 
 																					  //Allows for other games to connect to it
 }
 

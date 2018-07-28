@@ -98,9 +98,6 @@ private:
 	UFUNCTION()
 		void QuitPressed();
 
-	UFUNCTION()
-
-
 	TOptional<uint32> selectedIndex;
 
 	void UpdateChildren();
