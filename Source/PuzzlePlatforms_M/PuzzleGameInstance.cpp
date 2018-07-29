@@ -89,7 +89,7 @@ void UPuzzleGameInstance::CreateSession()
 		else
 			sessionSettings.bIsLANMatch = false;
 
-		sessionSettings.NumPublicConnections = 2;
+		sessionSettings.NumPublicConnections = 5;
 		sessionSettings.bShouldAdvertise = true;
 		sessionSettings.bUsesPresence = true; //Important and undocumented
 		sessionSettings.Set((SERVER_NAME_SETTINGS_KEY), desiredServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
@@ -211,6 +211,16 @@ void UPuzzleGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessio
 
 	playerController->ClientTravel(address, ETravelType::TRAVEL_Absolute);
 }
+
+void UPuzzleGameInstance::StartSession()
+{
+	if (sessionInterface.IsValid())
+	{
+		sessionInterface->StartSession(SESSION_NAME); //Starts the session. If this happens, it does not a
+	}
+}
+
+
 
 void UPuzzleGameInstance::LoadMainMenu()
 {

@@ -33,6 +33,8 @@ public:
 	virtual void LoadMainMenu() override;
 
 	virtual void RefreshServerList() override;
+
+	void StartSession();
 	
 private:
 	UFUNCTION(Exec)
